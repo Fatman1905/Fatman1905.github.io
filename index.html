@@ -7,7 +7,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;500;700&family=Be+Vietnam+Pro:wght@700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <style>
@@ -32,7 +32,7 @@
 * { box-sizing: border-box; padding: 0; margin: 0; }
 
 body {
-  font-family: 'Inter', sans-serif; /* Đã đổi font chính */
+  font-family: 'Roboto', sans-serif; /* Giữ Roboto cho nội dung chính */
   background-color: var(--bg-darker);
   /* Tạo nền gradient không gian */
   background-image: 
@@ -44,7 +44,9 @@ body {
 }
 
 h1, h2, h3 {
-  font-family: 'Orbitron', sans-serif; /* Giữ font kiểu máy móc/tương lai cho tiêu đề */
+  /* Sửa lỗi font: Ưu tiên Be Vietnam Pro cho ký tự tiếng Việt, 
+     sau đó mới đến Orbitron để giữ style tech cho chữ không dấu */
+  font-family: 'Be Vietnam Pro', 'Orbitron', sans-serif; 
   letter-spacing: 1px;
 }
 
@@ -57,7 +59,7 @@ header {
   width: 100%;
   padding: 15px 5%;
   background: rgba(15, 23, 42, 0.8);
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px); /* Hiệu ứng kính mờ */
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   display: flex;
   justify-content: space-between;
@@ -80,13 +82,29 @@ header {
 
 .logo i { font-size: 28px; }
 
-/* Text thông báo sở hữu */
-.owner-text {
-  font-family: 'Inter', sans-serif;
-  font-size: 14px;
-  color: var(--text-muted);
-  font-weight: 500;
-  text-shadow: 0 0 5px rgba(255, 255, 255, 0.1);
+.tools {
+  display: flex;
+  gap: 15px;
+}
+
+.icon-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--glass);
+  border: var(--border-glow);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: 0.3s;
+  color: var(--text-main);
+}
+
+.icon-btn:hover {
+  background: var(--accent-primary);
+  color: var(--bg-darker);
+  box-shadow: 0 0 15px var(--accent-primary);
 }
 
 /* =======================
@@ -103,10 +121,12 @@ header {
 
 .marquee-content {
   display: inline-block;
-  animation: scroll 25s linear infinite; /* Chậm hơn 1 chút */
+  animation: scroll 20s linear infinite;
   color: var(--accent-primary);
-  font-family: 'Orbitron', sans-serif;
+  /* Chuyển font để khắc phục lỗi hiển thị tiếng Việt */
+  font-family: 'Be Vietnam Pro', sans-serif; 
   font-size: 14px;
+  font-weight: 500;
 }
 
 @keyframes scroll {
@@ -134,8 +154,8 @@ header {
 }
 
 .section-header h2 {
-  font-size: 28px; /* Tăng size */
-  background: linear-gradient(to right, #fff, var(--accent-primary));
+  font-size: 28px;
+  background: linear-gradient(to right, #fff, #94a3b8);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -182,7 +202,6 @@ header {
   padding: 25px;
   position: relative;
   overflow: hidden;
-  /* Chỉnh lại transition để mượt hơn */
   transition: all 0.5s ease; 
   display: flex;
   flex-direction: column;
@@ -195,7 +214,7 @@ header {
 .card:hover {
   transform: translateY(-8px);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), 0 0 15px var(--accent-primary);
-  border-color: rgba(0, 242, 255, 0.5); /* Thay đổi màu border khi hover */
+  border-color: rgba(0, 242, 255, 0.5); 
 }
 
 .card:hover .icon-box {
@@ -209,7 +228,7 @@ header {
 .icon-box {
   width: 50px;
   height: 50px;
-  border-radius: 50%; /* Tròn */
+  border-radius: 50%;
   background: rgba(255, 255, 255, 0.08);
   color: var(--accent-primary);
   display: flex;
@@ -227,7 +246,7 @@ header {
 }
 
 .card p {
-  font-size: 14px; /* Tăng size chữ nội dung */
+  font-size: 14px;
   color: var(--text-muted);
   margin-bottom: 20px;
   line-height: 1.5;
@@ -256,6 +275,83 @@ header {
 }
 
 /* =======================
+   ĐẶC BIỆT: TRANH TÀI
+======================= */
+.contest-card {
+  border-top: 3px solid var(--accent-secondary);
+}
+.contest-card .icon-box {
+  color: var(--accent-secondary);
+}
+.contest-card .btn-action {
+  border-color: var(--accent-secondary);
+  color: var(--accent-secondary);
+}
+.contest-card .btn-action:hover {
+  background: var(--accent-secondary);
+  color: white;
+  box-shadow: 0 0 15px rgba(112, 0, 255, 0.4);
+}
+
+/* =======================
+   DISCORD SECTION
+======================= */
+.discord-banner {
+  background: linear-gradient(135deg, #5865F2, #404EED);
+  border-radius: 20px;
+  padding: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20px;
+  color: white;
+  box-shadow: 0 10px 40px rgba(88, 101, 242, 0.3);
+}
+
+.discord-content {
+  flex: 1;
+}
+
+.discord-content h3 {
+  font-size: 28px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.discord-btn {
+  background: white;
+  color: #5865F2;
+  padding: 12px 30px;
+  border-radius: 50px;
+  font-weight: bold;
+  font-size: 16px;
+  transition: 0.3s;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.discord-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+  background: #f0f0f0;
+}
+
+/* =======================
+   FOOTER
+======================= */
+footer {
+  text-align: center;
+  padding: 40px;
+  color: var(--text-muted);
+  font-size: 13px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* =======================
    HIỆU ỨNG MỞ NỘI DUNG (THEORY MODAL)
 ======================= */
 .content-modal {
@@ -264,8 +360,8 @@ header {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.85); /* Tối hơn */
-  backdrop-filter: blur(8px); /* Blur mạnh hơn */
+  background-color: rgba(0, 0, 0, 0.85); 
+  backdrop-filter: blur(8px); 
   z-index: 2000;
   display: flex;
   justify-content: center;
@@ -281,21 +377,21 @@ header {
 }
 
 .modal-content-wrapper {
-  background: var(--bg-darker); /* Màu nền đen hơn */
+  background: var(--bg-darker); 
   border: 2px solid var(--accent-secondary);
   border-radius: 15px;
-  max-width: 850px; /* Rộng hơn */
+  max-width: 850px; 
   width: 90%;
   margin-top: 50px;
   padding: 40px;
-  box-shadow: 0 0 40px rgba(112, 0, 255, 0.4); /* Shadow tím */
-  transform: translateY(-120%); /* Bắt đầu từ ngoài hẳn khung hình */
-  transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Easing mượt mà hơn */
+  box-shadow: 0 0 40px rgba(112, 0, 255, 0.4); 
+  transform: translateY(-120%); 
+  transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94); 
   position: relative;
 }
 
 .content-modal.active .modal-content-wrapper {
-  transform: translateY(10vh); /* Trượt xuống vị trí cách đỉnh 10vh */
+  transform: translateY(10vh); 
 }
 
 .modal-content-wrapper h3 {
@@ -331,12 +427,12 @@ header {
 }
 .grid-4.content-open .card:not(.active-card) {
   opacity: 0;
-  transform: translateX(100vw); /* Dịch chuyển ra khỏi khung hình bên phải */
+  transform: translateX(100vw); 
   pointer-events: none;
 }
 
 .grid-4.content-open .active-card {
-  opacity: 0; /* Cho thẻ đang mở cũng ẩn đi, chỉ tập trung vào modal */
+  opacity: 0; 
   pointer-events: none;
 }
 </style>
