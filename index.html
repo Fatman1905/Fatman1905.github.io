@@ -80,29 +80,12 @@ header {
 
 .logo i { font-size: 28px; }
 
-.tools {
-  display: flex;
-  gap: 15px;
-}
-
-.icon-btn {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: var(--glass);
-  border: var(--border-glow);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  transition: 0.3s;
-  color: var(--text-main);
-}
-
-.icon-btn:hover {
-  background: var(--accent-primary);
-  color: var(--bg-darker);
-  box-shadow: 0 0 15px var(--accent-primary);
+/* Thay thế .tools bằng .owner-text */
+.owner-text {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 14px;
+  color: var(--text-muted);
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.1);
 }
 
 /* =======================
@@ -198,11 +181,13 @@ header {
   padding: 25px;
   position: relative;
   overflow: hidden;
-  transition: all 0.4s ease;
+  transition: all 0.4s ease, transform 0.4s ease, opacity 0.4s ease; /* Thêm opacity cho hiệu ứng dịch chuyển */
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   backdrop-filter: blur(5px);
+  /* Dùng cho hiệu ứng dịch chuyển */
+  z-index: 10;
 }
 
 /* Hiệu ứng hover card */
@@ -302,6 +287,7 @@ header {
   gap: 20px;
   color: white;
   box-shadow: 0 10px 40px rgba(88, 101, 242, 0.3);
+  margin-bottom: 60px;
 }
 
 .discord-content {
@@ -345,9 +331,159 @@ footer {
   font-size: 13px;
   border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
+
+/* =======================
+   HIỆU ỨNG MỞ NỘI DUNG (THEORY MODAL)
+======================= */
+.content-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(5px);
+  z-index: 2000;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* Nội dung trượt xuống từ trên */
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.content-modal.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal-content-wrapper {
+  background: var(--bg-dark);
+  border: 2px solid var(--accent-primary);
+  border-radius: 15px;
+  max-width: 800px;
+  width: 90%;
+  margin-top: 50px;
+  padding: 40px;
+  box-shadow: 0 0 40px rgba(0, 242, 255, 0.4);
+  transform: translateY(-100%); /* Bắt đầu từ ngoài khung hình */
+  transition: transform 0.4s ease-out;
+  position: relative;
+}
+
+.content-modal.active .modal-content-wrapper {
+  transform: translateY(0); /* Trượt xuống vị trí */
+}
+
+.modal-content-wrapper h3 {
+  font-size: 28px;
+  color: var(--accent-primary);
+  margin-bottom: 20px;
+  border-bottom: 2px solid rgba(0, 242, 255, 0.2);
+  padding-bottom: 10px;
+}
+
+.modal-content-wrapper p {
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--text-main);
+}
+
+.modal-content-wrapper .dev-message {
+  color: var(--accent-secondary);
+  font-family: 'Orbitron', sans-serif;
+  font-size: 18px;
+  text-align: center;
+  margin-top: 30px;
+  padding: 20px;
+  background: rgba(112, 0, 255, 0.1);
+  border-radius: 10px;
+}
+
+/* Hiệu ứng dịch chuyển thẻ khi mở modal */
+.grid-4.content-open .card:not(.active-card) {
+  opacity: 0;
+  transform: translateX(100vw);
+  pointer-events: none;
+}
+
+.grid-4.content-open .active-card {
+  /* Giữ thẻ đang mở ở vị trí, nhưng vẫn bị modal che */
+  opacity: 0.1; 
+  pointer-events: none;
+}
+
 </style>
 
 <script>
+// Định nghĩa nội dung chi tiết cho từng mục
+const theoryContent = {
+  'uu-diem': {
+    title: 'Ưu điểm của AI',
+    content: '<div class="dev-message">🚧 **Tính năng đang phát triển.** Vui lòng quay lại sau.</div>'
+  },
+  'han-che': {
+    title: 'Hạn chế của AI',
+    content: '<div class="dev-message">🚧 **Tính năng đang phát triển.** Vui lòng quay lại sau.</div>'
+  },
+  'kinh-nghiem': {
+    title: 'Kinh nghiệm Training Model',
+    content: '<div class="dev-message">🚧 **Tính năng đang phát triển.** Vui lòng quay lại sau.</div>'
+  },
+  'meo-vat': {
+    title: 'Tips & Tricks tối ưu Workflow',
+    content: '<div class="dev-message">🚧 **Tính năng đang phát triển.** Vui lòng quay lại sau.</div>'
+  }
+};
+
+function openContent(e) {
+  const contentId = e.dataset.content;
+  const contentData = theoryContent[contentId];
+  const modal = document.getElementById('theoryModal');
+  const modalTitle = document.getElementById('modalTitle');
+  const modalBody = document.getElementById('modalBody');
+  const gridContainer = document.getElementById('theoryGrid');
+  
+  if (!contentData) {
+    alert("Nội dung không tìm thấy!");
+    return;
+  }
+
+  // 1. Dịch chuyển các thẻ khác
+  gridContainer.classList.add('content-open');
+
+  // Đánh dấu thẻ đang được mở
+  const allCards = gridContainer.querySelectorAll('.card');
+  allCards.forEach(card => card.classList.remove('active-card'));
+  e.closest('.card').classList.add('active-card');
+
+
+  // 2. Cập nhật và hiển thị modal
+  modalTitle.textContent = contentData.title;
+  modalBody.innerHTML = contentData.content;
+  
+  // Dùng setTimeout để đảm bảo hiệu ứng dịch chuyển chạy trước khi modal hiện
+  setTimeout(() => {
+    modal.classList.add('active');
+  }, 100);
+}
+
+function closeContent() {
+  const modal = document.getElementById('theoryModal');
+  const gridContainer = document.getElementById('theoryGrid');
+  
+  // 1. Ẩn modal
+  modal.classList.remove('active');
+  
+  // 2. Đợi modal ẩn xong rồi đưa các thẻ về vị trí
+  setTimeout(() => {
+    gridContainer.classList.remove('content-open');
+    const allCards = gridContainer.querySelectorAll('.card');
+    allCards.forEach(card => card.classList.remove('active-card'));
+  }, 300); // 300ms = thời gian transition của modal opacity
+}
+
+// Hàm cũ, giữ lại cho các nút khác
 function openDrive(e) {
   const link = e.dataset.link;
   // Hiệu ứng click nhẹ
@@ -355,7 +491,6 @@ function openDrive(e) {
   setTimeout(() => e.style.transform = "scale(1)", 150);
 
   if (!link || link === "#") {
-    // Thay alert bằng thông báo log console hoặc modal đẹp hơn nếu muốn
     alert("🚀 Tính năng đang được cập nhật!");
     return;
   }
@@ -372,16 +507,14 @@ function openDrive(e) {
     <i class="fa-solid fa-brain"></i>
     <span>AMF <span style="font-weight:300; font-size: 16px; color:white;">FORUM</span></span>
   </div>
-  <div class="tools">
-    <div class="icon-btn" title="Tìm kiếm"><i class="fa-solid fa-search"></i></div>
-    <div class="icon-btn" title="Thông báo"><i class="fa-solid fa-bell"></i></div>
-    <div class="icon-btn" title="Tài khoản"><i class="fa-solid fa-user"></i></div>
+  <div class="owner-text">
+    Owned by **Nguyễn Minh Khôi**
   </div>
 </header>
 
 <div class="marquee-container">
   <div class="marquee-content">
-    🔔 Chào mừng đến với AMF — Nơi chia sẻ, học hỏi và thi tài về AI. Cập nhật mới nhất: Cuộc thi Poster AI tháng 10 đang mở đăng ký! 🔔
+    🔔 website đang trong quá trình phát triển, hãy đợi thông báo nhé. 🔔
   </div>
 </div>
 
@@ -392,14 +525,14 @@ function openDrive(e) {
     <p>Kiến thức nền tảng và chuyên sâu về trí tuệ nhân tạo.</p>
   </div>
 
-  <div class="grid grid-4">
+  <div class="grid grid-4" id="theoryGrid">
     <div class="card">
       <div>
         <div class="icon-box"><i class="fa-solid fa-bolt"></i></div>
         <h3>Ưu điểm</h3>
         <p>Phân tích sức mạnh và lợi thế vượt trội của các mô hình AI hiện đại.</p>
       </div>
-      <button class="btn-action" data-link="#" onclick="openDrive(this)">Khám phá</button>
+      <button class="btn-action" data-content="uu-diem" onclick="openContent(this)">Khám phá</button>
     </div>
 
     <div class="card">
@@ -408,7 +541,7 @@ function openDrive(e) {
         <h3>Hạn chế</h3>
         <p>Nhận diện điểm yếu và các giới hạn kỹ thuật cần khắc phục.</p>
       </div>
-      <button class="btn-action" data-link="#" onclick="openDrive(this)">Khám phá</button>
+      <button class="btn-action" data-content="han-che" onclick="openContent(this)">Khám phá</button>
     </div>
 
     <div class="card">
@@ -417,7 +550,7 @@ function openDrive(e) {
         <h3>Kinh nghiệm</h3>
         <p>Bài học thực tế từ các chuyên gia trong quá trình training model.</p>
       </div>
-      <button class="btn-action" data-link="#" onclick="openDrive(this)">Khám phá</button>
+      <button class="btn-action" data-content="kinh-nghiem" onclick="openContent(this)">Khám phá</button>
     </div>
 
     <div class="card">
@@ -426,7 +559,7 @@ function openDrive(e) {
         <h3>Mẹo vặt</h3>
         <p>Tips & Tricks giúp tối ưu hóa luồng công việc (Workflow).</p>
       </div>
-      <button class="btn-action" data-link="#" onclick="openDrive(this)">Khám phá</button>
+      <button class="btn-action" data-content="meo-vat" onclick="openContent(this)">Khám phá</button>
     </div>
   </div>
 
@@ -478,6 +611,13 @@ function openDrive(e) {
   <p>&copy; 2024 AMF - A.I Mastering Forum. All rights reserved.</p>
   <p style="margin-top:5px; opacity: 0.5;">Designed for the Future.</p>
 </footer>
+
+<div id="theoryModal" class="content-modal" onclick="closeContent()">
+  <div class="modal-content-wrapper" onclick="event.stopPropagation()">
+    <h3 id="modalTitle"></h3>
+    <div id="modalBody"></div>
+  </div>
+</div>
 
 </body>
 </html>
